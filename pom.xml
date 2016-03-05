@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.javadev</groupId>
-    <artifactId>orderdatabase</artifactId>
+    <artifactId>stringcreator</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>java/swing application to create strings from template</name>
@@ -95,9 +95,8 @@
                 <configuration>
                     <options>
                         <option>-allowaccessmodification</option>
-                        <option>-keep public class org.jdesktop.**, com.github.javadev.orderdatabase.**, com.github.underscore.**</option>
-                        <option>-keep public class com.mysql.** {*;}</option>
-                        <option>-dontwarn com.mysql.**</option>
+                        <option>-keep public class org.jdesktop.**, com.github.javadev.stringcreator.**, com.github.underscore.**</option>
+                        <option>-dontwarn</option>
                         <option>-keepclassmembers class * { *** main(java.lang.String[]); }</option>
                     </options>
                     <libs>
@@ -145,33 +144,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.javadev</groupId>
-            <artifactId>underscore-lodash</artifactId>
-            <version>1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.38</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javadev</groupId>
-            <artifactId>moneytostr</artifactId>
-            <version>1.13</version>
-        </dependency>
-        <dependency>
-            <groupId>com.firebase</groupId>
-            <artifactId>firebase-client-jvm</artifactId>
-            <version>[2.5.2,)</version>
-        </dependency>
-        <dependency>
-            <groupId>com.firebase</groupId>
-            <artifactId>firebase-token-generator</artifactId>
-            <version>2.0.0</version>
+            <artifactId>underscore</artifactId>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
