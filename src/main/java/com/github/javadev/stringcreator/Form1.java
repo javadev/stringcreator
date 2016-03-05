@@ -284,11 +284,13 @@ public class Form1 extends javax.swing.JFrame {
                 count = wordsCounts.get(id);
             }
             wordsCounts.put(id, count + 1);
-            markerPositions.add(new LinkedHashMap<String, Object>() { {
-                put("start", matcher.start());
-                put("end", matcher.end());
-                put("newWord", $.first($.shuffle($.rest(arr, count))));
-            } });
+            if (arr != null) {
+                markerPositions.add(new LinkedHashMap<String, Object>() { {
+                    put("start", matcher.start());
+                    put("end", matcher.end());
+                    put("newWord", $.first($.shuffle($.rest(arr, count))));
+                } });
+            }
         }
         StringBuilder result = new StringBuilder(input);
         int correctIndex = 0;
