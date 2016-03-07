@@ -140,12 +140,7 @@
         <dependency>
             <groupId>net.java.dev.swing-layout</groupId>
             <artifactId>swing-layout</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javadev</groupId>
-            <artifactId>underscore</artifactId>
-            <version>1.12</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

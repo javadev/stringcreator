@@ -1,6 +1,5 @@
 package com.github.javadev.stringcreator;
 
-import com.github.underscore.$;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,11 +283,11 @@ public class Form1 extends javax.swing.JFrame {
                 count = wordsCounts.get(id);
             }
             wordsCounts.put(id, count + 1);
-            if (arr != null) {
+            if (arr != null && count < arr.size()) {
                 markerPositions.add(new LinkedHashMap<String, Object>() { {
                     put("start", matcher.start());
                     put("end", matcher.end());
-                    put("newWord", $.first($.shuffle($.rest(arr, count))));
+                    put("newWord", shuffle(arr, count));
                 } });
             }
         }
@@ -301,5 +300,13 @@ public class Form1 extends javax.swing.JFrame {
                     - (Integer) item.get("end") + (Integer) item.get("start");
         }
         return result.toString();
+    }
+
+    private String shuffle(List<String> arr, int i) {
+        int j = new java.util.Random().nextInt(arr.size() - i) + i;
+        String temp = arr.get(i);
+        arr.set(i, arr.get(j));
+        arr.set(j, temp);
+        return arr.get(i);
     }
 }
