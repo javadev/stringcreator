@@ -1,22 +1,81 @@
 package com.github.javadev.stringcreator;
 
+import com.github.underscore.lodash.$;
+import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 
 public class Form1 extends javax.swing.JFrame {
+    private final Map<String, Object> data = new LinkedHashMap<>();
     
     public Form1() {
         initComponents();
+        Path path = Paths.get("./data.json");
+        if (Files.exists(path)) {
+            try {
+                data.putAll((Map<String, Object>) $.fromJson(
+                    new String(Files.readAllBytes(path), "UTF-8")));
+            } catch (Exception ex) {
+                Logger.getLogger(Form1.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent winEvt) {
+                data.put("templateData", new ArrayList<String>());
+                for (int index = 0; index < jComboBox1.getModel().getSize(); index += 1) {
+                    ((List<String>) data.get("templateData")).add(
+                        String.valueOf(jComboBox1.getModel().getElementAt(index)).trim());
+                }
+                data.put("locationX", getLocation().x);
+                data.put("locationY", getLocation().y);
+                try {
+                   Files.write(Paths.get("./data.json"), $.toJson(data).getBytes("UTF-8"));
+                } catch (IOException ex) {
+                    Logger.getLogger(Form1.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        if (data.get("templateData") != null) {
+            fillComboBoxModel("templateData", jComboBox1);
+        }
         final java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        final int x = (screenSize.width - getWidth()) / 2;
-        final int y = (screenSize.height - getHeight()) / 2;
-        setLocation(x, y);
+        if (data.get("locationX") instanceof Long && data.get("locationY") instanceof Long) {
+            setLocation(Math.min(screenSize.width - 50, ((Long) data.get("locationX")).intValue()),
+                    Math.min(screenSize.height - 50, ((Long) data.get("locationY")).intValue()));
+        } else {
+            final int x = (screenSize.width - getWidth()) / 2;
+            final int y = (screenSize.height - getHeight()) / 2;
+            setLocation(x, y);
+        }
+    }
+    
+    private void fillComboBoxModel(String key, JComboBox jComboBox) {
+        final List<String> databaseData;
+        if (data.get(key) == null || !(data.get(key) instanceof List)) {
+            databaseData = new ArrayList<>();
+        } else {
+            databaseData = (List<String>) data.get(key);
+        }
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        for (String dataItem : databaseData) {
+            model.addElement(dataItem);
+        }
+        jComboBox.setModel(model);
     }
 
     /**
@@ -31,9 +90,8 @@ public class Form1 extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
-        jButton8 = new javax.swing.JButton();
+        jComboBox1 = new HistoryComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -41,6 +99,7 @@ public class Form1 extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Программа для генерации строк из шаблона");
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", 2, 18)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -63,20 +122,6 @@ public class Form1 extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jTextField1.setText("Маша {11} {243} и {243}.");
-        jTextField1.setNextFocusableComponent(jTextField2);
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextField1KeyPressed(evt);
-            }
-        });
-
         jTextField2.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -84,16 +129,11 @@ public class Form1 extends javax.swing.JFrame {
             }
         });
 
-        jButton8.setFont(new java.awt.Font("Times New Roman", 2, 18)); // NOI18N
-        jButton8.setText("Изменить слова в этом предложении");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
-            }
-        });
-        jButton8.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jButton8KeyPressed(evt);
+        jComboBox1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Маша {11} {243} и {243}." }));
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
             }
         });
 
@@ -132,7 +172,7 @@ public class Form1 extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(38, 38, 38)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -140,15 +180,11 @@ public class Form1 extends javax.swing.JFrame {
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTextField1)
-                                .addGap(1, 1, 1))
-                            .addComponent(jTextField2)))
+                            .addComponent(jTextField2)
+                            .addComponent(jComboBox1, 0, 459, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton8)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -157,30 +193,29 @@ public class Form1 extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jButton1)
                 .addContainerGap())
         );
-
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton1, jButton8});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        jTextField2.setText(generateString(jTextField1.getText()));
+        generateAndCopyString();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
-        
-    }//GEN-LAST:event_jTextField1KeyPressed
+    private void generateAndCopyString() throws HeadlessException {
+        String generatedString = generateString(String.valueOf(jComboBox1.getSelectedItem()));
+        jTextField2.setText(generatedString);
+        java.awt.datatransfer.StringSelection data = new java.awt.datatransfer.StringSelection(generatedString);
+        getToolkit().getSystemClipboard().setContents(data, data);
+    }
 
     private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
         
@@ -200,17 +235,9 @@ public class Form1 extends javax.swing.JFrame {
         dialog.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton8KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton8KeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8KeyPressed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        generateAndCopyString();
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -250,7 +277,7 @@ public class Form1 extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton8;
+    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
@@ -258,23 +285,26 @@ public class Form1 extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 
-    private String generateString(String input) {
-        Map<Integer, List<String>> replaces = new LinkedHashMap<Integer, List<String>>() { {
-            put(11, Arrays.asList("ела", "кушала", "лопала"));
-            put(243, Arrays.asList("кашу", "гречку", "суп", "котлету", "рис"));
-        } };
-        Map<Integer, Integer> wordsCounts = new LinkedHashMap<>();
+    public String generateString(String input) {
+        final Map<String, List<String>> replaces;
+        if (data.get("replaces") == null) {
+             replaces = new LinkedHashMap<String, List<String>>() { {
+                put("11", Arrays.asList("ела", "кушала", "лопала"));
+                put("243", Arrays.asList("кашу", "гречку", "суп", "котлету", "рис"));
+            } };
+        } else {
+            replaces = (Map<String, List<String>>) data.get("replaces");
+        }
+        Map<String, Integer> wordsCounts = new LinkedHashMap<>();
         Pattern regex = Pattern.compile("\\{\\d+[\\},:]", Pattern.CASE_INSENSITIVE);
         final Matcher matcher = regex.matcher(input);
         List<Map<String, Object>> markerPositions = new ArrayList<>();
         while (matcher.find()) {
             final String value = matcher.group();
-            final String cuttedValue = value.substring(1, value.length() - 1);
-            final Integer id = Integer.parseInt(cuttedValue);
+            final String id = value.substring(1, value.length() - 1);
             final List<String> arr = replaces.get(id);
             final int count;
             if (wordsCounts.get(id) == null) {
