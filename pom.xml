@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.javadev</groupId>
     <artifactId>stringcreator</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>java/swing application to create strings from template</name>
     <description>The java/swing application to create strings from template</description>

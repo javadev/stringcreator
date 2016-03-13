@@ -3,6 +3,7 @@ package com.github.javadev.stringcreator;
 import com.github.underscore.lodash.$;
 import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,9 +19,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Form1 extends javax.swing.JFrame {
     private final Map<String, Object> data = new LinkedHashMap<>();
+    private final JFileChooser chooser1 = new JFileChooser();
     
     public Form1() {
         initComponents();
@@ -62,6 +67,16 @@ public class Form1 extends javax.swing.JFrame {
             final int y = (screenSize.height - getHeight()) / 2;
             setLocation(x, y);
         }
+        chooser1.setAcceptAllFileFilterUsed(false);
+        chooser1.addChoosableFileFilter(new FileNameExtensionFilter("Html file", "html")); 
+        chooser1.setSelectedFile(new File("index.html"));
+        chooser1.setDialogTitle("Сохранить html файл");
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                chooser1.setCurrentDirectory(new File("."));
+            }
+        });
     }
     
     private void fillComboBoxModel(String key, JComboBox jComboBox) {
@@ -94,6 +109,7 @@ public class Form1 extends javax.swing.JFrame {
         jComboBox1 = new HistoryComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -139,6 +155,14 @@ public class Form1 extends javax.swing.JFrame {
 
         jMenu1.setMnemonic('\u0430');
         jMenu1.setText("Файл");
+
+        jMenuItem4.setText("Сгенерировать html...");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
 
         jMenuItem1.setMnemonic('\u044b');
         jMenuItem1.setText("Выход");
@@ -239,6 +263,10 @@ public class Form1 extends javax.swing.JFrame {
         generateAndCopyString();
     }//GEN-LAST:event_jComboBox1ItemStateChanged
 
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        generateHtml();
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -285,19 +313,12 @@ public class Form1 extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 
     public String generateString(String input) {
-        final Map<String, List<String>> replaces;
-        if (data.get("replaces") == null) {
-             replaces = new LinkedHashMap<String, List<String>>() { {
-                put("11", Arrays.asList("ела", "кушала", "лопала"));
-                put("243", Arrays.asList("кашу", "гречку", "суп", "котлету", "рис"));
-            } };
-        } else {
-            replaces = (Map<String, List<String>>) data.get("replaces");
-        }
+        Map<String, List<String>> replaces = getReplaces();
         Map<String, Integer> wordsCounts = new LinkedHashMap<>();
         Pattern regex = Pattern.compile("\\{\\d+[\\},:]", Pattern.CASE_INSENSITIVE);
         final Matcher matcher = regex.matcher(input);
@@ -332,11 +353,137 @@ public class Form1 extends javax.swing.JFrame {
         return result.toString();
     }
 
+    private Map<String, List<String>> getReplaces() {
+        final Map<String, List<String>> replaces;
+        if (data.get("replaces") == null) {
+            replaces = new LinkedHashMap<String, List<String>>() { {
+                put("11", Arrays.asList("ела", "кушала", "лопала"));
+                put("243", Arrays.asList("кашу", "гречку", "суп", "котлету", "рис"));
+            } };
+        } else {
+            replaces = (Map<String, List<String>>) data.get("replaces");
+        }
+        return replaces;
+    }
+
     private String shuffle(List<String> arr, int i) {
         int j = new java.util.Random().nextInt(arr.size() - i) + i;
         String temp = arr.get(i);
         arr.set(i, arr.get(j));
         arr.set(j, temp);
         return arr.get(i);
+    }
+
+    private void generateHtml() {
+        int result = chooser1.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            writeHtmlFile(chooser1.getSelectedFile().getAbsolutePath(), $.toJson(getReplaces()));
+        }
+    }
+
+    private void writeHtmlFile(String absolutePath, String replaces) {
+        String template = "<!DOCTYPE html>\n" +
+"<html lang=\"en\">\n" +
+"  <head>\n" +
+"    <meta charset=\"utf-8\">\n" +
+"    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" +
+"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
+"\n" +
+"    <title>Программа для генерации строк из шаблона</title>\n" +
+"\n" +
+"    <meta name=\"description\" content=\"Программа для генерации строк из шаблона\">\n" +
+"    <meta name=\"author\" content=\"javadev\">\n" +
+"\n" +
+"    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css\" rel=\"stylesheet\">\n" +
+"\n" +
+"  </head>\n" +
+"  <body>\n" +
+"\n" +
+"    <div class=\"container-fluid\">\n" +
+"    <div class=\"row\">\n" +
+"        <div class=\"col-md-12\">\n" +
+"            <form role=\"form\" id=\"exampleForm1\">\n" +
+"                <div class=\"form-group\">\n" +
+"                     \n" +
+"                    <label for=\"exampleInputTemplate1\">\n" +
+"                        Шаблон предложения\n" +
+"                    </label>\n" +
+"                    <input type=\"text\" class=\"form-control\" id=\"exampleInputTemplate1\">\n" +
+"                </div>\n" +
+"                <div class=\"form-group\">\n" +
+"                     \n" +
+"                    <label for=\"exampleInputNewString1\">\n" +
+"                        Новое предложение\n" +
+"                    </label>\n" +
+"                    <input type=\"text\" class=\"form-control\" id=\"exampleInputNewString1\">\n" +
+"                </div>\n" +
+"                <button type=\"submit\" class=\"btn btn-default\">\n" +
+"                    Получить новое предложение\n" +
+"                </button>\n" +
+"            </form>\n" +
+"        </div>\n" +
+"    </div>\n" +
+"</div>\n" +
+"\n" +
+"    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js\"></script>\n" +
+"    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js\"></script>\n" +
+"    <script>\n" +
+"        var generateString = function(input) {\n" +
+"            var replaces = " + replaces + ";\n" +
+"            var wordsCounts = {};\n" +
+"            var regex = /\\{\\d+[\\},:]/ig;\n" +
+"            var matches = input.match(regex);\n" +
+"            var markerPositions = [];\n" +
+"            while ((myArray = regex.exec(input)) !== null) {\n" +
+"                var value = myArray[0];\n" +
+"                var id = value.substring(1, value.length - 1);\n" +
+"                var arr = replaces[id];\n" +
+"                var count ;\n" +
+"                if (wordsCounts[id] == null) {\n" +
+"                    count = 0;\n" +
+"                } else {\n" +
+"                    count = wordsCounts[id];\n" +
+"                }\n" +
+"                wordsCounts[id] = count + 1;\n" +
+"                if (arr != null && count < arr.length) {\n" +
+"                    markerPositions.push(\n" +
+"                        {\n" +
+"                            start: myArray.index,\n" +
+"                            end: myArray.index + value.length,\n" +
+"                            newWord: shuffle(arr, count),\n" +
+"                        }\n" +
+"                    );\n" +
+"                }\n" +
+"            }\n" +
+"            console.log(markerPositions);\n" +
+"            result = input;\n" +
+"            var correctIndex = 0;\n" +
+"            for (var index in markerPositions) {\n" +
+"                var item = markerPositions[index];\n" +
+"                result = result.substring(0, correctIndex + item[\"start\"]) + item[\"newWord\"] + result.substring(correctIndex + item[\"end\"]);\n" +
+"                correctIndex += item[\"newWord\"].length - item[\"end\"] + item[\"start\"];\n" +
+"            }\n" +
+"            return result;\n" +
+"        };\n" +
+"        var shuffle = function(arr, i) {\n" +
+"            var j = Math.floor(Math.random() * (arr.length - i)) + i;\n" +
+"            var temp = arr[i];\n" +
+"            arr[i] = arr[j];\n" +
+"            arr[j] = temp;\n" +
+"            return arr[i];\n" +
+"        };\n" +
+"        $(\"#exampleForm1\").submit(function() {\n" +
+"            var input = $(\"#exampleInputTemplate1\").val();\n" +
+"            $(\"#exampleInputNewString1\").val(generateString(input));\n" +
+"            return false;\n" +
+"        });\n" +
+"    </script>\n" +
+"  </body>\n" +
+"</html>";
+        try {
+            Files.write(Paths.get(absolutePath), template.getBytes("UTF-8"));
+        } catch (IOException ex) {
+            Logger.getLogger(Form1.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
