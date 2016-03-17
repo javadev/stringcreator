@@ -111,6 +111,8 @@ public class Form1 extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
 
@@ -155,7 +157,10 @@ public class Form1 extends javax.swing.JFrame {
 
         jMenu1.setMnemonic('\u0430');
         jMenu1.setText("Файл");
+        jMenu1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
 
+        jMenuItem4.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        jMenuItem4.setMnemonic('\u0433');
         jMenuItem4.setText("Сгенерировать html...");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -164,6 +169,7 @@ public class Form1 extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem4);
 
+        jMenuItem1.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jMenuItem1.setMnemonic('\u044b');
         jMenuItem1.setText("Выход");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -175,9 +181,27 @@ public class Form1 extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
+        jMenu3.setMnemonic('\u0435');
+        jMenu3.setText("Сервис");
+        jMenu3.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+
+        jMenuItem3.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
+        jMenuItem3.setMnemonic('\u043f');
+        jMenuItem3.setText("Параметры...");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem3);
+
+        jMenuBar1.add(jMenu3);
+
         jMenu2.setMnemonic('\u0441');
         jMenu2.setText("Справка");
+        jMenu2.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
 
+        jMenuItem2.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jMenuItem2.setMnemonic('\u043e');
         jMenuItem2.setText("О программе");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -267,6 +291,15 @@ public class Form1 extends javax.swing.JFrame {
         generateHtml();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        NewJDialog2 dialog = new NewJDialog2(this, true, (Map<String, Object>) data.get("replaces"));
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        if (dialog.isApproved()) {
+            data.put("replaces", dialog.getProductData());
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -310,9 +343,11 @@ public class Form1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
@@ -432,7 +467,6 @@ public class Form1 extends javax.swing.JFrame {
 "            var replaces = " + replaces + ";\n" +
 "            var wordsCounts = {};\n" +
 "            var regex = /\\{\\d+[\\},:]/ig;\n" +
-"            var matches = input.match(regex);\n" +
 "            var markerPositions = [];\n" +
 "            while ((myArray = regex.exec(input)) !== null) {\n" +
 "                var value = myArray[0];\n" +
@@ -455,7 +489,6 @@ public class Form1 extends javax.swing.JFrame {
 "                    );\n" +
 "                }\n" +
 "            }\n" +
-"            console.log(markerPositions);\n" +
 "            result = input;\n" +
 "            var correctIndex = 0;\n" +
 "            for (var index in markerPositions) {\n" +
