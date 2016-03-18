@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Программа для генерации строк из шаблона</title>
+
+    <meta name="description" content="Программа для генерации строк из шаблона">
+    <meta name="author" content="javadev">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <form role="form" id="exampleForm1">
+                <div class="form-group">
+                     
+                    <label for="exampleInputTemplate1">
+                        Шаблон предложения
+                    </label>
+                    <input type="text" class="form-control" id="exampleInputTemplate1">
+                </div>
+                <div class="form-group">
+                     
+                    <label for="exampleInputNewString1">
+                        Новое предложение
+                    </label>
+                    <input type="text" class="form-control" id="exampleInputNewString1">
+                </div>
+                <button type="submit" class="btn btn-default">
+                    Получить новое предложение
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script>
+        var generateString = function(input) {
+            var replaces = {
+  "243": [
+    "котлету",
+    "кашу",
+    "суп",
+    "рис",
+    "гречку"
+  ],
+  "11": [
+    "лопала",
+    "кушала",
+    "ела"
+  ]
+};
+            var wordsCounts = {};
+            var regex = /\{\d+[\},:]/ig;
+            var markerPositions = [];
+            while ((myArray = regex.exec(input)) !== null) {
+                var value = myArray[0];
+                var id = value.substring(1, value.length - 1);
+                var arr = replaces[id];
+                var count ;
+                if (wordsCounts[id] == null) {
+                    count = 0;
+                } else {
+                    count = wordsCounts[id];
+                }
+                wordsCounts[id] = count + 1;
+                if (arr != null && count < arr.length) {
+                    markerPositions.push(
+                        {
+                            start: myArray.index,
+                            end: myArray.index + value.length,
+                            newWord: shuffle(arr, count),
+                        }
+                    );
+                }
+            }
+            result = input;
+            var correctIndex = 0;
+            for (var index in markerPositions) {
+                var item = markerPositions[index];
+                result = result.substring(0, correctIndex + item["start"]) + item["newWord"] + result.substring(correctIndex + item["end"]);
+                correctIndex += item["newWord"].length - item["end"] + item["start"];
+            }
+            return result;
+        };
+        var shuffle = function(arr, i) {
+            var j = Math.floor(Math.random() * (arr.length - i)) + i;
+            var temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            return arr[i];
+        };
+        $("#exampleForm1").submit(function() {
+            var input = $("#exampleInputTemplate1").val();
+            $("#exampleInputNewString1").val(generateString(input));
+            return false;
+        });
+    </script>
+  </body>
+</html>
