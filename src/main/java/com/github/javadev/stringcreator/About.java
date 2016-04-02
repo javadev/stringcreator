@@ -55,7 +55,7 @@ public class About extends javax.swing.JDialog {
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Версия 1.3, автор Колесников В. В.");
+        jLabel3.setText("Версия 1.4, автор Колесников В. В.");
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

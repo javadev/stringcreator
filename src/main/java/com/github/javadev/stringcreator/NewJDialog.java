@@ -1,5 +1,7 @@
 package com.github.javadev.stringcreator;
 
+import com.github.underscore.Optional;
+import com.github.underscore.Predicate;
 import com.github.underscore.lodash.$;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
 
 public class NewJDialog extends javax.swing.JDialog {
     private final List<Map<String, Object>> replaceItem;
+    private final NewJDialog5 dialog5 = new NewJDialog5((java.awt.Frame) getOwner(), true);
     private boolean isApproved;
 
     public NewJDialog(java.awt.Frame parent, boolean modal,
@@ -132,6 +135,7 @@ public class NewJDialog extends javax.swing.JDialog {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton7 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Таблица идентификаторов");
@@ -230,6 +234,14 @@ public class NewJDialog extends javax.swing.JDialog {
             }
         });
 
+        jButton8.setFont(new java.awt.Font("Times New Roman", 2, 18)); // NOI18N
+        jButton8.setText("Загрузить данные ...");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -252,7 +264,8 @@ public class NewJDialog extends javax.swing.JDialog {
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jButton2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jButton3)
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jButton4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jButton7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jButton7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jButton8, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(12, 12, 12))
         );
         layout.setVerticalGroup(
@@ -276,7 +289,9 @@ public class NewJDialog extends javax.swing.JDialog {
                         .add(jButton3)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                         .add(jButton4)
-                        .add(60, 60, 60)))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                        .add(jButton8)
+                        .add(18, 18, 18)))
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jButton5)
                     .add(jButton6))
@@ -366,6 +381,35 @@ public class NewJDialog extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        dialog5.setLocationRelativeTo(this);
+        dialog5.setVisible(true);
+        if (dialog5.isApproved()) {
+            for (final Map<String, Object> item : dialog5.getData()) {
+                Optional<Map<String, Object>> result = $.find(replaceItem, new Predicate<Map<String, Object>>() {
+                        @Override
+                        public Boolean apply(Map<String, Object> arg) {
+                            return arg.get("id").equals(item.get("id"));
+                        }
+                });
+                if (result.isPresent()) {
+                    result.get().put("id", item.get("id"));
+                    result.get().put("words", result.get().get("words") + ", " + item.get("value"));        
+                } else {
+                    replaceItem.add(new LinkedHashMap<String, Object>() { {
+                        put("id", item.get("id"));
+                        put("words", item.get("value"));
+                    } });
+                }
+            }
+            int row = jTable1.getSelectedRow();
+            jTable1.setModel(new MyModel(this.replaceItem));
+            if (row >= 0 && row < this.replaceItem.size()) {
+                jTable1.setRowSelectionInterval(row, row);
+            }
+        }
+    }//GEN-LAST:event_jButton8ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -374,6 +418,7 @@ public class NewJDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
