@@ -1,6 +1,6 @@
 package com.github.javadev.stringcreator;
 
-import com.github.underscore.lodash.$;
+import com.github.underscore.U;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -20,7 +20,7 @@ public class NewJDialog2 extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.productData = (Map<String, Object>) (productData == null ?
-                new LinkedHashMap<>() : (Map<String, Object>) $.clone(productData));
+                new LinkedHashMap<>() : (Map<String, Object>) U.clone(productData));
     }
 
     public boolean isApproved() {
@@ -134,7 +134,7 @@ public class NewJDialog2 extends javax.swing.JDialog {
         for (Map.Entry<String, Object> entry : productData.entrySet()) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("id", entry.getKey());
-            map.put("words", $.join((List<String>) entry.getValue(), ", "));
+            map.put("words", U.join((List<String>) entry.getValue(), ", "));
             list.add(map);
         }
         return list;

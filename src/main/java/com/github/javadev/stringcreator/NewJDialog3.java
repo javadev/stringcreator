@@ -1,6 +1,6 @@
 package com.github.javadev.stringcreator;
 
-import com.github.underscore.lodash.$;
+import com.github.underscore.U;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -204,7 +204,7 @@ public class NewJDialog3 extends javax.swing.JDialog {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         if (dialog.isApproved()) {
-            jTextField2.setText($.join(convertToList(dialog.getNewModel()), ", "));
+            jTextField2.setText(U.join(convertToList(dialog.getNewModel()), ", "));
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 

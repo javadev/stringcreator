@@ -1,12 +1,13 @@
 package com.github.javadev.stringcreator;
 
 import com.github.underscore.Optional;
-import com.github.underscore.Predicate;
-import com.github.underscore.lodash.$;
+import com.github.underscore.U;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -22,7 +23,7 @@ public class NewJDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.replaceItem = (List<Map<String, Object>>) (replaceItem == null ?
-                new ArrayList<>() : (List<Map<String, Object>>) $.clone(replaceItem));
+                new ArrayList<>() : (List<Map<String, Object>>) U.clone(replaceItem));
         jTable1.setModel(new MyModel(this.replaceItem));
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -386,9 +387,9 @@ public class NewJDialog extends javax.swing.JDialog {
         dialog5.setVisible(true);
         if (dialog5.isApproved()) {
             for (final Map<String, Object> item : dialog5.getData()) {
-                Optional<Map<String, Object>> result = $.find(replaceItem, new Predicate<Map<String, Object>>() {
+                Optional<Map<String, Object>> result = U.find(replaceItem, new Predicate<Map<String, Object>>() {
                         @Override
-                        public Boolean apply(Map<String, Object> arg) {
+                        public boolean test(Map<String, Object> arg) {
                             return arg.get("id").equals(item.get("id"));
                         }
                 });

@@ -1,19 +1,16 @@
 package com.github.javadev.stringcreator;
 
 import com.github.underscore.Template;
-import com.github.underscore.lodash.$;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
+import com.github.underscore.U;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,13 +27,13 @@ public class DatabaseService {
 
     public DatabaseService(String hostName, String dbName, String user, String pass,
             String idName, String valueName, String tableName) {
-        this.hostName = !$.isString(hostName) || hostName.trim().isEmpty() ? "localhost" : $.escape(hostName);
-        this.dbName = !$.isString(dbName) || dbName.trim().isEmpty() ? "dictionary" : $.escape(dbName);
-        this.user = !$.isString(user) || user.trim().isEmpty() ? "root" : user;
-        this.pass = !$.isString(pass) || pass.trim().isEmpty() ? "" : pass;
-        this.idName = !$.isString(idName) || idName.trim().isEmpty() ? "id" : idName;
-        this.valueName = !$.isString(valueName) || valueName.trim().isEmpty() ? "value" : valueName;
-        this.tableName = !$.isString(tableName) || tableName.trim().isEmpty() ? "dictionary" : tableName;
+        this.hostName = !U.isString(hostName) || hostName.trim().isEmpty() ? "localhost" : U.escape(hostName);
+        this.dbName = !U.isString(dbName) || dbName.trim().isEmpty() ? "dictionary" : U.escape(dbName);
+        this.user = !U.isString(user) || user.trim().isEmpty() ? "root" : user;
+        this.pass = !U.isString(pass) || pass.trim().isEmpty() ? "" : pass;
+        this.idName = !U.isString(idName) || idName.trim().isEmpty() ? "id" : idName;
+        this.valueName = !U.isString(valueName) || valueName.trim().isEmpty() ? "value" : valueName;
+        this.tableName = !U.isString(tableName) || tableName.trim().isEmpty() ? "dictionary" : tableName;
     }
 
     private String getDbUrl() {
@@ -55,8 +52,8 @@ public class DatabaseService {
                 put("VALUE_NAME", valueName);
                 put("TABLE_NAME", tableName);
             } };
-            Template<Set<Map.Entry<String, Object>>> template = $.template(SELECT_SQL);
-            try (ResultSet resultSet = stmt1.executeQuery(template.apply(params.entrySet()))) {
+            Template<Map<String, Object>> template = U.template(SELECT_SQL);
+            try (ResultSet resultSet = stmt1.executeQuery(template.apply(params))) {
                 while (resultSet.next()) {
                     Map<String, Object> data = new LinkedHashMap<>();
                     data.put("id", resultSet.getString(idName));
@@ -89,10 +86,7 @@ public class DatabaseService {
     }
 
     private void checkExceptionAndCreateTable(final Exception se, Connection conn) {
-        if (se instanceof MySQLSyntaxErrorException) {
-            String detailMessage = ((MySQLSyntaxErrorException) se).getMessage();
-        }
-        Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, se);                    
+        Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, se);
     }
 
     private Connection createConnection() throws ClassNotFoundException, SQLException {

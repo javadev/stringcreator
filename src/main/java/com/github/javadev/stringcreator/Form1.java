@@ -1,6 +1,6 @@
 package com.github.javadev.stringcreator;
 
-import com.github.underscore.lodash.$;
+import com.github.underscore.U;
 import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -32,7 +32,7 @@ public class Form1 extends javax.swing.JFrame {
         Path path = Paths.get("./data.json");
         if (Files.exists(path)) {
             try {
-                data.putAll((Map<String, Object>) $.fromJson(
+                data.putAll((Map<String, Object>) U.fromJson(
                     new String(Files.readAllBytes(path), "UTF-8")));
             } catch (Exception ex) {
                 Logger.getLogger(Form1.class.getName()).log(Level.SEVERE, null, ex);
@@ -49,7 +49,7 @@ public class Form1 extends javax.swing.JFrame {
                 data.put("locationX", getLocation().x);
                 data.put("locationY", getLocation().y);
                 try {
-                   Files.write(Paths.get("./data.json"), $.toJson(data).getBytes("UTF-8"));
+                   Files.write(Paths.get("./data.json"), U.toJson(data).getBytes("UTF-8"));
                 } catch (IOException ex) {
                     Logger.getLogger(Form1.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -412,7 +412,7 @@ public class Form1 extends javax.swing.JFrame {
     private void generateHtml() {
         int result = chooser1.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
-            writeHtmlFile(chooser1.getSelectedFile().getAbsolutePath(), $.toJson(getReplaces()));
+            writeHtmlFile(chooser1.getSelectedFile().getAbsolutePath(), U.toJson(getReplaces()));
         }
     }
 
